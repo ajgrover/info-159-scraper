@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import time
 import smtplib
 from email.message import EmailMessage
+import tkinter as tk
 
 URL = "https://classes.berkeley.edu/search/class/info%20159?retain-filters=1&f%5B0%5D=im_field_term_name%3A2885&f%5B1%5D=ts_course_level%3Aup"
 page = requests.get(URL)
@@ -38,12 +39,21 @@ def send_email():
     server.send_message(msg)
     server.quit()
 
-while True:
-    val = find_class("INFO 159")
-    if val:
-        print(val)
+def update_color():
+    if find_class("INFO 159"):
+        canvas.config(bg="green")
         send_email()
     else:
-        print(val)
-        # send_email() #TEST!! REMOVE
-    time.sleep(60*5)
+        canvas.config(bg="red")
+    # Schedule the function to run again after 5 minutes
+    root.after(300000, update_color)
+
+root = tk.Tk()
+root.attributes('-fullscreen', True)
+canvas = tk.Canvas(root, width=root.winfo_screenwidth(), height=root.winfo_screenheight())
+canvas.pack()
+
+# Initial call to start the update loop
+update_color()
+
+root.mainloop()
